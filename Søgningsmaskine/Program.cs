@@ -52,7 +52,21 @@ namespace SearchProgram
                     case ConsoleKey.D1:
                         {
                             Console.Clear();
-                            SortArray2D(Search2D(movieTable2D), movieTable2D);
+
+                            object[,] methodChecker; 
+                            do
+                            {
+                                methodChecker = Search2D(movieTable2D);
+                                if (methodChecker == null)
+                                {
+                                    Console.WriteLine("Søgning fandt ingen resultater. Prøv igen!");
+                                }
+                                else
+                                {
+                                    SortArray2D(methodChecker, movieTable2D);
+                                }
+                            } while (methodChecker == null);
+                            //SortArray2D(Search2D(movieTable2D), movieTable2D);
                             break;
                         }
                     case ConsoleKey.NumPad2:
@@ -71,8 +85,8 @@ namespace SearchProgram
                             {
                                 Console.WriteLine(movieTable2D[i,0] + " - " + movieTable2D[i,1] + " - " + movieTable2D[i,2]);
                             }
-
-                            Console.ReadLine();
+                            Console.WriteLine("tryk på en knap for at gå tilbage");
+                            Console.ReadKey();
                             break;
                         }
                     case ConsoleKey.NumPad4:
@@ -154,10 +168,22 @@ namespace SearchProgram
 
             int searchArrLength = 0;
             bool noMatchInFirstArray = false;
-            Console.WriteLine("Indtast Søgning Her:");
-            Regex reg = new Regex("(" + Console.ReadLine() + ")", RegexOptions.IgnoreCase); //takes user input as regex pattern.
-                                                                                            //RegexOptions.IgnoreCase makes the regex case insensitive
+            bool noMatchInSecondArray = false;
+            Console.WriteLine("Du kan søge på Titel eller Genre\nIndtast Søgning Her:");
+            string s = "";
 
+            do
+            {
+                s = Console.ReadLine();
+                if (string.IsNullOrEmpty(s))
+                {
+                    Console.Clear();
+                    Console.WriteLine("Du kan søge på Titel eller Genre\nIndtastning må ikke være tom\nIndtast Søgning Her:");
+                }
+            } while (string.IsNullOrEmpty(s));
+            Regex reg = new Regex("(" + s + ")", RegexOptions.IgnoreCase); //takes user input as regex pattern.
+                                                                                            //RegexOptions.IgnoreCase makes the regex case insensitive
+            Console.Clear();
             //Finds amount of matches there is which equals to the length of the array: searchArr
             for (int i = 0; i < tableInput.GetLength(0); i++)
             {
@@ -178,6 +204,12 @@ namespace SearchProgram
                 }
             }
 
+            if(noMatchInFirstArray == true && searchArrLength == 0)
+            {
+                Console.WriteLine("Ingen resultater fundet");
+                return null;
+            }
+
             //this is an issue, since this array is given as output and therefore the addscore uses this to incease score instead of the original array
             //fix could be to overload selectmovie(); where it takes 1 array and 2 2DArrays
             object[,] searchArr = new object[searchArrLength,3]; // Array of search results
@@ -187,9 +219,9 @@ namespace SearchProgram
 
 
             //Loop that adds regex matches to the array searchArr on movietitles
-            if (noMatchInFirstArray == false)
+            if (!noMatchInFirstArray)
             {
-                Console.WriteLine("Searching for Title\n");
+                Console.WriteLine("Søger på Titel\n");
                 for (int i = 0; i < tableInput.GetLength(0); i++)
                 {
                     if (reg.IsMatch(tableInput[i, 0].ToString()))
@@ -202,9 +234,9 @@ namespace SearchProgram
                     }
                 }
             }
-            else            //Loop that adds regex matches to the array searchArr on genre name
+            else if(!noMatchInSecondArray)            //Loop that adds regex matches to the array searchArr on genre name
             {
-                Console.WriteLine("No Title Found, Searching for Genre:\n");
+                Console.WriteLine("Søger på genre\n");
                 for (int i = 0; i < tableInput.GetLength(0); i++)
                 {
                     if (reg.IsMatch(tableInput[i, 1].ToString()))
@@ -217,6 +249,7 @@ namespace SearchProgram
                     }
                 }
             }
+
 
             return searchArr;
         }
@@ -326,8 +359,19 @@ namespace SearchProgram
             {
                 Console.WriteLine(i+1 + " " + namesArr[i]);
             }
-            //TODO make this a loop to make sure user gives an input
-            int.TryParse(Console.ReadLine(), out int choice);
+
+            bool check = false;
+            int choice;
+            do
+            {
+                 check = int.TryParse(Console.ReadLine(), out choice);
+                if (choice > namesArr.Length || choice <= 0)
+                {
+                    check = false;
+                    Console.WriteLine("Vælg venligst en af de viste valgmuligheder");
+                }
+            } while (!check);
+            
 
 
             string s = namesArr[choice-1];
@@ -363,15 +407,25 @@ namespace SearchProgram
             }
         }
 
-        static void SelectMovie(string[] namesArr, object[,] sortedArray,object[,] movieTable) //overloading fordi jeg ikke gider rette min kode
+        static void SelectMovie(string[] namesArr, object[,] sortedArray,object[,] movieTable) //overloading fordi jeg ikke tør/gider rette min kode
         {
+            Console.WriteLine("Indskriv valg:\n");
             for (int i = 0; i < namesArr.Length; i++)
             {
                 Console.WriteLine(i + 1 + " " + namesArr[i]);
             }
-            //TODO make this a loop to make sure user gives an input
-            int.TryParse(Console.ReadLine(), out int choice);
+            bool check = false;
+            int choice;
+            do
+            {
+                check = int.TryParse(Console.ReadLine(), out choice);
+                if (choice > namesArr.Length || choice <= 0)
+                {
+                    check = false;
+                    Console.WriteLine("Vælg venligst et tal fra listen");
+                }
 
+            } while (!check);
 
             string s = namesArr[choice - 1];
             int index = 0;
@@ -379,31 +433,40 @@ namespace SearchProgram
             {
                 if (movieTable[i, 0] == s)
                 {
+                    Console.Clear();
                     Console.WriteLine(movieTable[i, 0] + " - " + movieTable[i, 1] + "\n1. Se Film\n2. Gå Tilbage");
                     index = i;
                 }
             }
-
-            switch (Console.ReadKey().Key)
+            bool exit = false;
+            do
             {
-                case ConsoleKey.NumPad1:
-                case ConsoleKey.D1:
-                    {
-                        AddScore(index, movieTable);
+                
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.NumPad1:
+                    case ConsoleKey.D1:
+                        {
+                            exit = true;
+                            AddScore(index, movieTable);
+                            break;
+                        }
+
+                    case ConsoleKey.NumPad2:
+                    case ConsoleKey.D2:
+                        {
+                            exit = true;
+                            Console.Clear();
+                            break;
+                        }
+
+
+                    default:
+                        Console.WriteLine("\nVælg et tal fra listen!");
                         break;
-                    }
-
-                case ConsoleKey.NumPad2:
-                case ConsoleKey.D2:
-                    {
-                        Console.Clear();
-                        break;
-                    }
-
-
-                default:
-                    break;
-            }
+                }
+            } while (!exit);
+            
         }
 
         static void AddScore(int index, object [,] movieTable)
