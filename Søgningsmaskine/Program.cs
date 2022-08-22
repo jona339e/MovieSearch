@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Søgningsmaskine;
+﻿using Søgningsmaskine;
 
 namespace SearchProgram
 {
@@ -15,6 +14,8 @@ namespace SearchProgram
                     { "The Four Seasons" , "Sci-Fi" , 0 },{ "Three Seasons" , "Sci-Fi" , 0 },{ "Seasons" , "Fantasy" , 0 },{ "Winnie the Pooh: Seasons of Giving" , "Fantasy" , 0 },{ "Four Seasons Lodge" , "Adventure" , 0 },
                     { "A Man for All Seasons" , "Comedy" , 0 },{ "Seasons of Gray " , "Romance" , 0 }
                 };
+
+
 
             while (true)
             {
