@@ -1,35 +1,12 @@
 ﻿using System.Text.RegularExpressions;
-using System.Linq;
+using Søgningsmaskine;
 
 namespace SearchProgram
 {
 	class Program
 	{
-		//static string[] movieTable = { "Good Morning Vietnam", "Good Night and Good Luck", "Good Luck Chuck", "The Good the Bad and the Ugly", "A few Good Men", "Good Men Good Women",
-  //      "The Good Son", "The Good Shepherd", "A change of Seasons", "The Four Seasons", "Three Seasons", "Seasons", "Winnie the Pooh: Seasons of Giving", "Four Seasons Lodge",
-  //      "A Man for All Seasons", "Seasons of Gray" }; 
-        // Array of movie names. Not used as I decided to use multidimensional arrays
-
         static void Main(string[] args)
 		{
-            #region
-            //small tests i made before starting
-
-            //Brug evt. struct til at give film entries navn og genre
-            // til genre kan man bruge et array så filmen kan have mere end 1 genre
-
-            // initializes regex with the word season
-            //Regex reg = new Regex("^(season)$");
-
-            //bool resutl = reg.IsMatch("sea");//checks if sea matches the word of the reg instance
-            //bool result = reg.IsMatch("season");//checks if season matches the word of the reg instance
-
-            //         Console.WriteLine(resutl);//false
-            //Console.WriteLine(result);//true
-
-            #endregion
-
-
             //my array of movies, genre and scores.
             object[,] movieTable2D =
                 {
@@ -38,9 +15,6 @@ namespace SearchProgram
                     { "The Four Seasons" , "Sci-Fi" , 0 },{ "Three Seasons" , "Sci-Fi" , 0 },{ "Seasons" , "Fantasy" , 0 },{ "Winnie the Pooh: Seasons of Giving" , "Fantasy" , 0 },{ "Four Seasons Lodge" , "Adventure" , 0 },
                     { "A Man for All Seasons" , "Comedy" , 0 },{ "Seasons of Gray " , "Romance" , 0 }
                 };
-
-
-            //SortArray(Search());
 
             while (true)
             {
@@ -56,7 +30,7 @@ namespace SearchProgram
                             object[,] methodChecker; 
                             do
                             {
-                                methodChecker = Search2D(movieTable2D);
+                                methodChecker = MyClass.Search2D(movieTable2D);
                                 if (methodChecker == null)
                                 {
                                     Console.WriteLine("Søgning fandt ingen resultater. Prøv igen!");
@@ -66,7 +40,6 @@ namespace SearchProgram
                                     SortArray2D(methodChecker, movieTable2D);
                                 }
                             } while (methodChecker == null);
-                            //SortArray2D(Search2D(movieTable2D), movieTable2D);
                             break;
                         }
                     case ConsoleKey.NumPad2:
@@ -102,158 +75,7 @@ namespace SearchProgram
                 
                 Console.Clear();
             }
-          
-
-            
-            //foreach (string s in SearchScore(movieTable2D)) //prints out search results based on score
-            //{
-            //    Console.WriteLine(s);
-            //}
-
 		}
-        //gammel kode der ikke skal kigges så meget på
-        #region 
-        //code that was used initially before making use of multidimensional arrays
-        //      static string[] Search()
-        //{
-
-        //	int searchArrLength = 0;
-        //          Console.WriteLine("Indtast Søgning Her:");
-        //	Regex reg = new Regex("(" + Console.ReadLine() + ")"); //takes user input as regex pattern
-
-
-        //	//Finds amount of matches there is which equals to the length of the array: searchArr
-        //	for (int i = 0; i < movieTable.Length; i++)
-        //	{
-        //		if (reg.IsMatch(movieTable[i]))
-        //		{
-        //			searchArrLength++;
-        //		}
-        //	}
-
-        //	string[] searchArr = new string[searchArrLength]; // Array of search results
-
-        //	searchArrLength = 0; // searchArrLength is set to 0 for reuse purposes -- searArrLength is used as the index of the new array searchArr.
-        //						 // If 'i' was used from the for loop it would result in an overflow wehre the index of searchArr and movieTable didn't match
-
-
-        //          //Loop that adds regex matches to the array searchArr
-        //          for (int i = 0; i < movieTable.Length; i++)
-        //	{
-        //              if (reg.IsMatch(movieTable[i]))
-        //              {
-        //                  searchArr[searchArrLength++] = movieTable[i];
-
-        //              }
-        //          }
-        //	return searchArr;
-        //}
-
-        //static void SortArray(string[] myArray) // sorts array alphabetically and prints it to console
-        //{
-        //          Array.Sort(myArray);
-
-        //          for (int i = 0; i < myArray.Length; i++)
-        //          {
-        //              Console.WriteLine(myArray[i]);
-        //          }
-
-        //      }
-
-        #endregion
-
-
-        static object[,] Search2D(object[,] tableInput)
-        {
-
-            int searchArrLength = 0;
-            bool noMatchInFirstArray = false;
-            bool noMatchInSecondArray = false;
-            Console.WriteLine("Du kan søge på Titel eller Genre\nIndtast Søgning Her:");
-            string s = "";
-
-            do
-            {
-                s = Console.ReadLine();
-                if (string.IsNullOrEmpty(s))
-                {
-                    Console.Clear();
-                    Console.WriteLine("Du kan søge på Titel eller Genre\nIndtastning må ikke være tom\nIndtast Søgning Her:");
-                }
-            } while (string.IsNullOrEmpty(s));
-            Regex reg = new Regex("(" + s + ")", RegexOptions.IgnoreCase); //takes user input as regex pattern.
-                                                                                            //RegexOptions.IgnoreCase makes the regex case insensitive
-            Console.Clear();
-            //Finds amount of matches there is which equals to the length of the array: searchArr
-            for (int i = 0; i < tableInput.GetLength(0); i++)
-            {
-                if (reg.IsMatch(tableInput[i,0].ToString()))
-                {
-                    searchArrLength++;
-                }
-            }
-            if (searchArrLength == 0) //If no match is found on the array with movie titles the program looks for a match on genre name.
-            {
-                noMatchInFirstArray = true;
-                for (int i = 0; i < tableInput.GetLength(0); i++)
-                {
-                    if (reg.IsMatch(tableInput[i, 1].ToString()))
-                    {
-                        searchArrLength++;
-                    }
-                }
-            }
-
-            if(noMatchInFirstArray == true && searchArrLength == 0)
-            {
-                Console.WriteLine("Ingen resultater fundet");
-                return null;
-            }
-
-            //this is an issue, since this array is given as output and therefore the addscore uses this to incease score instead of the original array
-            //fix could be to overload selectmovie(); where it takes 1 array and 2 2DArrays
-            object[,] searchArr = new object[searchArrLength,3]; // Array of search results
-
-            searchArrLength = 0; // searchArrLength is set to 0 for reuse purposes -- searArrLength is used as the index of the new array searchArr.
-                                 // If 'i' was used from the for loop it would result in an overflow wehre the index of searchArr and movieTable didn't match
-
-
-            //Loop that adds regex matches to the array searchArr on movietitles
-            if (!noMatchInFirstArray)
-            {
-                Console.WriteLine("Søger på Titel\n");
-                for (int i = 0; i < tableInput.GetLength(0); i++)
-                {
-                    if (reg.IsMatch(tableInput[i, 0].ToString()))
-                    {
-                        for (int x = 0; x < tableInput.GetLength(1); x++)
-                        {
-                            searchArr[searchArrLength, x] = tableInput[i, x];
-                        }
-                        searchArrLength++;
-                    }
-                }
-            }
-            else if(!noMatchInSecondArray)            //Loop that adds regex matches to the array searchArr on genre name
-            {
-                Console.WriteLine("Søger på genre\n");
-                for (int i = 0; i < tableInput.GetLength(0); i++)
-                {
-                    if (reg.IsMatch(tableInput[i, 1].ToString()))
-                    {
-                        for (int x = 0; x < tableInput.GetLength(1); x++)
-                        {
-                            searchArr[searchArrLength, x] = tableInput[i, x];
-                        }
-                        searchArrLength++;
-                    }
-                }
-            }
-
-
-            return searchArr;
-        }
-
         static void SortArray2D(object[,] myArray, object[,] movieTable2D) 
         {
 
@@ -266,11 +88,9 @@ namespace SearchProgram
 
             Array.Sort(tempArr);
 
-            SelectMovie(tempArr, myArray, movieTable2D);
+            SelectMovie(tempArr, movieTable2D);
 
         }
-
-
         static string[] SearchScore(object[,] scoreArr)
         {
             // Notes to self:
@@ -352,7 +172,6 @@ namespace SearchProgram
             return titleArr; // er unreachable men visual studio brokker sig
 
         }
-
         static void SelectMovie(string[] namesArr, object[,] movieTable)
         {
             for (int i = 0; i < namesArr.Length; i++)
@@ -406,69 +225,6 @@ namespace SearchProgram
                     break;
             }
         }
-
-        static void SelectMovie(string[] namesArr, object[,] sortedArray,object[,] movieTable) //overloading fordi jeg ikke tør/gider rette min kode
-        {
-            Console.WriteLine("Indskriv valg:\n");
-            for (int i = 0; i < namesArr.Length; i++)
-            {
-                Console.WriteLine(i + 1 + " " + namesArr[i]);
-            }
-            bool check = false;
-            int choice;
-            do
-            {
-                check = int.TryParse(Console.ReadLine(), out choice);
-                if (choice > namesArr.Length || choice <= 0)
-                {
-                    check = false;
-                    Console.WriteLine("Vælg venligst et tal fra listen");
-                }
-
-            } while (!check);
-
-            string s = namesArr[choice - 1];
-            int index = 0;
-            for (int i = 0; i < movieTable.GetLength(0); i++)
-            {
-                if (movieTable[i, 0] == s)
-                {
-                    Console.Clear();
-                    Console.WriteLine(movieTable[i, 0] + " - " + movieTable[i, 1] + "\n1. Se Film\n2. Gå Tilbage");
-                    index = i;
-                }
-            }
-            bool exit = false;
-            do
-            {
-                
-                switch (Console.ReadKey().Key)
-                {
-                    case ConsoleKey.NumPad1:
-                    case ConsoleKey.D1:
-                        {
-                            exit = true;
-                            AddScore(index, movieTable);
-                            break;
-                        }
-
-                    case ConsoleKey.NumPad2:
-                    case ConsoleKey.D2:
-                        {
-                            exit = true;
-                            Console.Clear();
-                            break;
-                        }
-
-
-                    default:
-                        Console.WriteLine("\nVælg et tal fra listen!");
-                        break;
-                }
-            } while (!exit);
-            
-        }
-
         static void AddScore(int index, object [,] movieTable)
         {
             for (int i = 0; i < movieTable.GetLength(0); i++)
