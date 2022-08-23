@@ -16,67 +16,85 @@ namespace SearchProgram
                 };
 
 
-
+            // Calls the MainSwitch method inside a never ending loop
             while (true)
             {
-                Console.WriteLine("1. Normal Søgning\n2. Få recommended\n3. Se 'hemmelige' statistikker\n4. Afslut Program");
-                switch (Console.ReadKey().Key)
-                {
-
-                    case ConsoleKey.NumPad1:
-                    case ConsoleKey.D1:
-                        {
-                            Console.Clear();
-
-                            object[,] methodChecker; 
-                            do
-                            {
-                                methodChecker = MyClass.Search2D(movieTable2D);
-                                if (methodChecker == null)
-                                {
-                                    Console.WriteLine("Søgning fandt ingen resultater. Prøv igen!");
-                                }
-                                else
-                                {
-                                    SortArray2D(methodChecker, movieTable2D);
-                                }
-                            } while (methodChecker == null);
-                            break;
-                        }
-                    case ConsoleKey.NumPad2:
-                    case ConsoleKey.D2:
-                        {
-                            Console.Clear();
-                            SelectMovie(SearchScore(movieTable2D), movieTable2D);
-                            break;
-                        }
-                    case ConsoleKey.NumPad3:
-                    case ConsoleKey.D3:
-                        {
-                            Console.Clear();
-
-                            for (int i = 0; i < movieTable2D.GetLength(0); i++)
-                            {
-                                Console.WriteLine(movieTable2D[i,0] + " - " + movieTable2D[i,1] + " - " + movieTable2D[i,2]);
-                            }
-                            Console.WriteLine("tryk på en knap for at gå tilbage");
-                            Console.ReadKey();
-                            break;
-                        }
-                    case ConsoleKey.NumPad4:
-                    case ConsoleKey.D4:
-                        {
-                            Environment.Exit(0);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-                
-                
-                Console.Clear();
+                MainSwitch(movieTable2D);
             }
-		}
+        }
+
+        // Method that displays a menu using a switch case. calls various methods.
+        static void MainSwitch(object[,] movieTable2D)
+        {
+            Console.WriteLine("1. Normal Søgning\n2. Få recommended\n3. Se 'hemmelige' statistikker\n4. Afslut Program");
+
+            // Switch is activated on key press in the range of 1-4
+            switch (Console.ReadKey().Key)
+            {
+                // Key press works with both numpad and regular key
+                case ConsoleKey.NumPad1:
+                case ConsoleKey.D1:
+                    {
+                        Console.Clear();
+
+                        // Declares an object to be used as the do while loop condition. The loop runs while the object is null;
+                        object[,] methodChecker;
+                        do
+                        {
+                            // Calls the method Search2D and sets the return value equal to methodChecker
+                            methodChecker = MyClass.Search2D(movieTable2D);
+
+                            // If Search2D returned null error is written to the console
+                            if (methodChecker == null)
+                            {
+                                Console.WriteLine("Søgning fandt ingen resultater. Prøv igen!");
+                            }
+                            // If Search2D returned an array
+                            else
+                            {
+                                // Calls SortArray2D method with two 2D arrays
+                                SortArray2D(methodChecker, movieTable2D);
+                            }
+                        } while (methodChecker == null);
+                        break;
+                    }
+                case ConsoleKey.NumPad2:
+                case ConsoleKey.D2:
+                    {
+                        // First runs the method SearchScore with the movieTabel2D object and uses the return value to run the SelectMovie method, again with the movieTable2D object.
+                        Console.Clear();
+                        SelectMovie(SearchScore(movieTable2D), movieTable2D);
+                        break;
+                    }
+                case ConsoleKey.NumPad3:
+                case ConsoleKey.D3:
+                    {
+                        // Prints out all the values stored in movieTable2D to the console.
+                        Console.Clear();
+
+                        for (int i = 0; i < movieTable2D.GetLength(0); i++)
+                        {
+                            Console.WriteLine(movieTable2D[i, 0] + " - " + movieTable2D[i, 1] + " - " + movieTable2D[i, 2]);
+                        }
+                        Console.WriteLine("tryk på en knap for at gå tilbage");
+                        Console.ReadKey();
+                        break;
+                    }
+                case ConsoleKey.NumPad4:
+                case ConsoleKey.D4:
+                    {
+                        // Exits the program
+                        Environment.Exit(0);
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+
+            Console.Clear();
+        }
+
         static void SortArray2D(object[,] myArray, object[,] movieTable2D) 
         {
 

@@ -5,15 +5,16 @@ namespace Søgningsmaskine
     internal class MyClass
     {
 
-        internal static object[,] Search2D(object[,] tableInput)
+        internal static object[,] Search2D(object[,] movieTable2D)
         {
-
+            //TODO make it so both titles and genres are searched for. atm you can have a title with a genre name and only return the title.
             int searchArrLength = 0;
             bool noMatchInFirstArray = false;
             bool noMatchInSecondArray = false;
             Console.WriteLine("Du kan søge på Titel eller Genre\nIndtast Søgning Her:");
             string s = "";
 
+            // Takes user input and makes sure it isn't null or empty
             do
             {
                 s = Console.ReadLine();
@@ -23,69 +24,77 @@ namespace Søgningsmaskine
                     Console.WriteLine("Du kan søge på Titel eller Genre\nIndtastning må ikke være tom\nIndtast Søgning Her:");
                 }
             } while (string.IsNullOrEmpty(s));
-            Regex reg = new Regex("(" + s + ")", RegexOptions.IgnoreCase); //takes user input as regex pattern.
-                                                                           //RegexOptions.IgnoreCase makes the regex case insensitive
+
+            // takes user input as regex pattern.
+            // RegexOptions.IgnoreCase makes the regex case insensitive
+            Regex reg = new Regex("(" + s + ")", RegexOptions.IgnoreCase); 
+
             Console.Clear();
-            //Finds amount of matches there is which equals to the length of the array: searchArr
-            for (int i = 0; i < tableInput.GetLength(0); i++)
+
+            // Finds amount of matches there is which equals to the length of the array: searchArr
+            for (int i = 0; i < movieTable2D.GetLength(0); i++)
             {
-                if (reg.IsMatch(tableInput[i, 0].ToString()))
+                if (reg.IsMatch(movieTable2D[i, 0].ToString()))
                 {
                     searchArrLength++;
                 }
             }
-            if (searchArrLength == 0) //If no match is found on the array with movie titles the program looks for a match on genre name.
+            // If no match is found on the array with movie titles the program looks for a match on genre name.
+            if (searchArrLength == 0) 
             {
                 noMatchInFirstArray = true;
-                for (int i = 0; i < tableInput.GetLength(0); i++)
+
+                // Does the same as above for loop except this is on the genre placement in the 2D array.
+                for (int i = 0; i < movieTable2D.GetLength(0); i++)
                 {
-                    if (reg.IsMatch(tableInput[i, 1].ToString()))
+                    if (reg.IsMatch(movieTable2D[i, 1].ToString()))
                     {
                         searchArrLength++;
                     }
                 }
             }
 
-            if (noMatchInFirstArray == true && searchArrLength == 0)
+            // Checks if there is any matches at all, if there is not null is returned
+            if (searchArrLength == 0)
             {
-                Console.WriteLine("Ingen resultater fundet");
                 return null;
             }
 
-            //this is an issue, since this array is given as output and therefore the addscore uses this to incease score instead of the original array
-            //fix could be to overload selectmovie(); where it takes 1 array and 2 2DArrays
-            object[,] searchArr = new object[searchArrLength, 3]; // Array of search results
+            // Array of search results
+            object[,] searchArr = new object[searchArrLength, 3];
 
-            searchArrLength = 0; // searchArrLength is set to 0 for reuse purposes -- searArrLength is used as the index of the new array searchArr.
-                                 // If 'i' was used from the for loop it would result in an overflow wehre the index of searchArr and movieTable didn't match
+            // searchArrLength is set to 0 for reuse purposes -- searArrLength is used as the index of the new array searchArr.
+            searchArrLength = 0; 
 
 
-            //Loop that adds regex matches to the array searchArr on movietitles
+            // Loop that adds regex matches to the array searchArr on movietitles
             if (!noMatchInFirstArray)
             {
                 Console.WriteLine("Søger på Titel\n");
-                for (int i = 0; i < tableInput.GetLength(0); i++)
+                for (int i = 0; i < movieTable2D.GetLength(0); i++)
                 {
-                    if (reg.IsMatch(tableInput[i, 0].ToString()))
+                    if (reg.IsMatch(movieTable2D[i, 0].ToString()))
                     {
-                        for (int x = 0; x < tableInput.GetLength(1); x++)
+                        for (int x = 0; x < movieTable2D.GetLength(1); x++)
                         {
-                            searchArr[searchArrLength, x] = tableInput[i, x];
+                            searchArr[searchArrLength, x] = movieTable2D[i, x];
                         }
                         searchArrLength++;
                     }
                 }
             }
-            else if (!noMatchInSecondArray)            //Loop that adds regex matches to the array searchArr on genre name
+
+            // Loop that adds regex matches to the array searchArr on genre name
+            else if (!noMatchInSecondArray)            
             {
                 Console.WriteLine("Søger på genre\n");
-                for (int i = 0; i < tableInput.GetLength(0); i++)
+                for (int i = 0; i < movieTable2D.GetLength(0); i++)
                 {
-                    if (reg.IsMatch(tableInput[i, 1].ToString()))
+                    if (reg.IsMatch(movieTable2D[i, 1].ToString()))
                     {
-                        for (int x = 0; x < tableInput.GetLength(1); x++)
+                        for (int x = 0; x < movieTable2D.GetLength(1); x++)
                         {
-                            searchArr[searchArrLength, x] = tableInput[i, x];
+                            searchArr[searchArrLength, x] = movieTable2D[i, x];
                         }
                         searchArrLength++;
                     }
